@@ -1,101 +1,362 @@
-import Image from "next/image";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import HeroBackground from "@/components/HeroBackground";
+import CollectionCard from "@/components/CollectionCard";
+import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
+import type { Collection, Product } from "@/lib/types";
+import Link from "next/link";
+
+async function getCollections(): Promise<Collection[]> {
+  const { data } = await supabase
+    .from("collections")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+    .limit(3);
+  return data || [];
+}
+
+async function getLatestProducts(): Promise<Product[]> {
+  const { data } = await supabase
+    .from("products")
+    .select("*, collection:collections(id,name,slug,description,cover_image,is_active,display_order,created_at)")
+    .order("created_at", { ascending: false })
+    .limit(8);
+  return (data as Product[]) || [];
+}
+
+export default async function HomePage() {
+  const [collections, products] = await Promise.all([
+    getCollections(),
+    getLatestProducts(),
+  ]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div style={{ backgroundColor: "#1e0f1a", minHeight: "100vh" }}>
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* ── Hero ── */}
+      <section
+        style={{
+          position: "relative",
+          height: "100vh",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <HeroBackground height="100vh" />
+
+        <div
+          style={{
+            position: "relative",
+            zIndex: 10,
+            textAlign: "center",
+            padding: "0 24px",
+            maxWidth: 720,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 11,
+              fontWeight: 400,
+              color: "#e8b4cd",
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              marginBottom: 20,
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            New Collection 2025
+          </p>
+          <h1
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "clamp(48px, 8vw, 96px)",
+              fontWeight: 300,
+              color: "#f9f0f5",
+              letterSpacing: "0.06em",
+              lineHeight: 1.1,
+              marginBottom: 20,
+            }}
           >
-            Read our docs
-          </a>
+            B LUXE Collection
+          </h1>
+          <p
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 18,
+              fontWeight: 400,
+              color: "#e8b4cd",
+              marginBottom: 40,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Wear Your Confidence
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Link
+              href="/shop"
+              className="btn-gold"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#1e0f1a",
+                backgroundColor: "#c9a97a",
+                padding: "14px 36px",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+              }}
+            >
+              Shop Now
+            </Link>
+            <Link
+              href="/collections"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#f9f0f5",
+                backgroundColor: "transparent",
+                border: "1px solid #f9f0f5",
+                padding: "14px 36px",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                transition: "border-color 0.2s, color 0.2s",
+              }}
+            >
+              View Collections
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        {/* Scroll indicator */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 32,
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 6,
+            animation: "bounce 2s infinite",
+          }}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <span style={{ color: "rgba(249,240,245,0.4)", fontSize: 11, fontFamily: "var(--font-body)", letterSpacing: "0.1em" }}>scroll</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 3v10M3 9l5 5 5-5" stroke="rgba(249,240,245,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ── Featured Collections ── */}
+      <section style={{ backgroundColor: "#f9f0f5", padding: "80px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(28px, 4vw, 42px)",
+                fontWeight: 300,
+                color: "#2a1a24",
+                letterSpacing: "0.04em",
+                marginBottom: 12,
+              }}
+            >
+              Our Collections
+            </h2>
+            <p
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 15,
+                color: "rgba(42,26,36,0.6)",
+              }}
+            >
+              Explore our curated drops
+            </p>
+          </div>
+
+          {collections.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "60px 0",
+                color: "rgba(42,26,36,0.5)",
+                fontFamily: "var(--font-body)",
+                fontSize: 15,
+              }}
+            >
+              Collections coming soon.
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: 24,
+              }}
+            >
+              {collections.map((c) => (
+                <CollectionCard key={c.id} collection={c} />
+              ))}
+            </div>
+          )}
+
+          <div style={{ textAlign: "center", marginTop: 48 }}>
+            <Link
+              href="/collections"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#2a1a24",
+                border: "1px solid #2a1a24",
+                padding: "12px 32px",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                display: "inline-block",
+              }}
+            >
+              View All Collections
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Latest Arrivals ── */}
+      <section style={{ backgroundColor: "#1e0f1a", padding: "80px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <h2
+              style={{
+                fontFamily: "var(--font-heading)",
+                fontSize: "clamp(28px, 4vw, 42px)",
+                fontWeight: 300,
+                color: "#f9f0f5",
+                letterSpacing: "0.04em",
+                marginBottom: 12,
+              }}
+            >
+              Latest Arrivals
+            </h2>
+          </div>
+
+          {products.length === 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "60px 0",
+                color: "rgba(249,240,245,0.4)",
+                fontFamily: "var(--font-body)",
+                fontSize: 15,
+              }}
+            >
+              Products coming soon.
+            </div>
+          ) : (
+            <div
+              className="grid-products"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                gap: 20,
+              }}
+            >
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
+
+          <div style={{ textAlign: "center", marginTop: 48 }}>
+            <Link
+              href="/shop"
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#c9a97a",
+                border: "1px solid #c9a97a",
+                padding: "12px 32px",
+                textDecoration: "none",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                display: "inline-block",
+              }}
+            >
+              Shop All
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Brand Statement ── */}
+      <section
+        style={{
+          backgroundColor: "#3d1f30",
+          padding: "80px 24px",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <p
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "clamp(24px, 4vw, 40px)",
+              fontWeight: 300,
+              fontStyle: "italic",
+              color: "#e8b4cd",
+              lineHeight: 1.4,
+              marginBottom: 36,
+            }}
+          >
+            &ldquo;Every piece tells a story. What&apos;s yours?&rdquo;
+          </p>
+          <Link
+            href="/shop"
+            style={{
+              fontFamily: "var(--font-body)",
+              fontSize: 13,
+              fontWeight: 500,
+              color: "#1e0f1a",
+              backgroundColor: "#c9a97a",
+              padding: "14px 36px",
+              textDecoration: "none",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              display: "inline-block",
+            }}
+          >
+            Explore Shop
+          </Link>
+        </div>
+      </section>
+
+      <Footer />
+
+      <style>{`
+        @keyframes bounce {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50% { transform: translateX(-50%) translateY(8px); }
+        }
+      `}</style>
     </div>
   );
 }
