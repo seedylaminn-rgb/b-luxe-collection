@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 type Props = {
   productName: string;
   price: number;
@@ -7,7 +9,17 @@ type Props = {
 };
 
 export default function WhatsAppButton({ productName, price, selectedSize }: Props) {
-  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2201234567";
+  const [waNumber, setWaNumber] = useState(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2201234567"
+  );
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d.whatsapp_number) setWaNumber(d.whatsapp_number); })
+      .catch(() => {});
+  }, []);
+
   const text = encodeURIComponent(
     `Hi! I'd like to order ${productName}${selectedSize ? ` in size ${selectedSize}` : ""}. Price: GMD ${price.toLocaleString()}`
   );

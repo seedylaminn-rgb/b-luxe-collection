@@ -1,9 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
-  const wa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2201234567";
+  const [wa, setWa] = useState(
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2201234567"
+  );
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((d) => { if (d.whatsapp_number) setWa(d.whatsapp_number); })
+      .catch(() => {});
+  }, []);
 
   return (
     <footer style={{ backgroundColor: "#1e0f1a", borderTop: "1px solid rgba(232,180,205,0.15)" }}>

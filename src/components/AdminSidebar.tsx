@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-type Page = "dashboard" | "products" | "collections";
+type Page = "dashboard" | "products" | "collections" | "settings";
 
 const navItems: { page: Page; label: string; href: string; icon: string }[] = [
   { page: "dashboard", label: "Dashboard", href: "/admin/dashboard", icon: "▦" },
   { page: "products", label: "Products", href: "/admin/products", icon: "◈" },
   { page: "collections", label: "Collections", href: "/admin/collections", icon: "⊞" },
+  { page: "settings", label: "Settings", href: "/admin/settings", icon: "⚙" },
 ];
 
 export default function AdminSidebar({ activePage }: { activePage: Page }) {

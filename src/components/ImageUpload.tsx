@@ -28,22 +28,7 @@ export default function ImageUpload({ onUpload, currentImage }: Props) {
       setPreview(url);
       onUpload(url);
     } catch {
-      // TEMPORARY: Cloudinary credentials not configured — fall back to base64 data URL
-      // so the admin panel is testable locally. Replace with real Cloudinary once
-      // NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET are set.
-      try {
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        setPreview(dataUrl);
-        onUpload(dataUrl);
-        setError(null);
-      } catch {
-        setError("Upload failed. Please try again.");
-      }
+      setError("Upload failed. Please try again.");
     } finally {
       setLoading(false);
     }
