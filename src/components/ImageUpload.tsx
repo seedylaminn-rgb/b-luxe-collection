@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { cloudinaryUpload } from "@/lib/cloudinary";
 
@@ -47,19 +46,19 @@ export default function ImageUpload({ onUpload, currentImage }: Props) {
         <div>
           <div
             style={{
-              position: "relative",
               width: "100%",
               height: 200,
               borderRadius: 8,
               overflow: "hidden",
               marginBottom: 8,
+              backgroundColor: "#f3f4f6",
             }}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={preview}
               alt="Preview"
-              fill
-              style={{ objectFit: "cover" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             />
           </div>
           <button
